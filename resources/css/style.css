@@ -1,0 +1,131 @@
+html, body{
+    height: 100%;
+    background-image: url(../images/skyscraper.jpg);
+}
+.jumbotron{
+    text-align: center;
+    margin-bottom: 0px;
+    padding-top:5px;
+    padding-bottom: 0px;
+    border-radius: 0px;
+    background-color: transparent;
+    background-position: center;
+    background-size: cover;
+    color: white;
+}
+.jumbotron h1{
+    
+    color: white;
+}
+.selector{
+    padding: 0.5em;
+    border-left: 3px solid #777777;
+    margin-right: 2px;
+    border-collapse: collapse;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.selector-row{
+     width: 100%;
+     margin: 0 auto;
+     
+}
+.selector:hover{
+    text-decoration: underline;
+}
+.employees{
+    background-color:#097572;
+    margin-bottom: -2px;
+    z-index: 3000;
+    border-left: 2px solid #cccccc;
+}
+.departments{
+    background-color:#32a8a4;
+}
+.locations{
+    background-color:#99bfbe;
+    z-index: 1;
+    border-left: 2px solid #cccccc
+}
+#search{
+    margin:0px;
+    padding: 0px;
+}
+.search-bar{
+    justify-content:center;
+    position: relative;
+}
+#search-button{
+    margin-left: 20px;
+}   
+#add-button{
+    margin-right:0px;
+    margin-left: 60px;
+    position: absolute;
+    right: 20px;
+
+}
+.main-table{
+    width: 100%;
+    margin:0 auto;
+    height: 100%;
+    color: white;
+    border-left: 2px solid #cccccc;
+    border-right: 2px solid #777777;
+    border-bottom: 2px solid #777777;
+    border-top: 2px solid #cccccc;
+    border-radius: 10px;
+    background-color: #097572;
+}
+   
+.scrollable{
+    height: 85%;
+    overflow: auto;
+}
+
+.departments-div{
+    display: none;
+}
+.locations-div{
+    display: none;
+}
+.modal{
+    z-index: 3001
+}
+
+.modal h4{
+    text-align: center;
+    margin-left: 25%
+}
+.modal img{
+    width: 25%;
+    display: block;
+    margin: 20px auto;
+}
+.modal .form{
+    display:none;
+}
+.modal .form .name{
+    display: block;
+    margin: 0 auto;
+    margin-left: 36%
+}
+.modal .form table{
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+}
+.modal .form select{
+    display: block;
+    margin: 0 auto;
+}
+.modal .form input{
+    display: block;
+    margin: 0 auto;
+}
+.modal .form button{
+    display: block;
+    margin: 0 auto;
+}
+
+
