@@ -1,9 +1,10 @@
 <?php
 
 	// example use from browser
-	// use insertDepartment.php first to create new dummy record and then specify it's id in the command below
-	// http://localhost/companydirectory/libs/php/deleteDepartmentByID.php?id= <id>
+	// http://localhost/companydirectory/libs/php/getPersonnel.php?id=1
 
+	// remove next two lines for production
+	
 	$executionStartTime = microtime(true);
 
 	include("config.php");
@@ -28,9 +29,9 @@
 
 	}	
 
-	// $_REQUEST used for development / debugging. Remember to cange to $_POST for production
+	// first query
 
-	$query = 'DELETE FROM department WHERE id = ' . $_POST['id'];
+	$query = 'SELECT * from personnel WHERE id =' . $_REQUEST['id'];
 
 	$result = $conn->query($query);
 	
@@ -48,12 +49,50 @@
 		exit;
 
 	}
+   
+   	$personnel = [];
+
+	while ($row = mysqli_fetch_assoc($result)) {
+
+		array_push($personnel, $row);
+
+	}
+
+	// second query
+
+	$query = 'SELECT id, name from department ORDER BY id';
+
+	$result = $conn->query($query);
+	
+	if (!$result) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		mysqli_close($conn);
+
+		echo json_encode($output); 
+
+		exit;
+
+	}
+   
+   	$department = [];
+
+	while ($row = mysqli_fetch_assoc($result)) {
+
+		array_push($department, $row);
+
+	}
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = [];
+	$output['data']['personnel'] = $personnel;
+	$output['data']['department'] = $department;
 	
 	mysqli_close($conn);
 

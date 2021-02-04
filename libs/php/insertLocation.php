@@ -1,8 +1,10 @@
 <?php
 
 	// example use from browser
-	// use insertDepartment.php first to create new dummy record and then specify it's id in the command below
-	// http://localhost/companydirectory/libs/php/deleteDepartmentByID.php?id= <id>
+	// http://localhost/companydirectory/libs/php/insertDepartment.php?name=New%20Department&locationID=1
+
+	// remove next two lines for production
+	
 
 	$executionStartTime = microtime(true);
 
@@ -30,7 +32,7 @@
 
 	// $_REQUEST used for development / debugging. Remember to cange to $_POST for production
 
-	$query = 'DELETE FROM department WHERE id = ' . $_POST['id'];
+	$query = 'INSERT INTO location (name) VALUES("' . $_REQUEST['name'] . '")';
 
 	$result = $conn->query($query);
 	
@@ -49,11 +51,38 @@
 
 	}
 
+	$query = 'SELECT * from location WHERE name ="' . $_POST['name'] . '"';
+
+	$result = $conn->query($query);
+	
+	if (!$result) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		mysqli_close($conn);
+
+		echo json_encode($output); 
+
+		exit;
+
+	}
+   
+   	$department = [];
+
+	while ($row = mysqli_fetch_assoc($result)) {
+
+		array_push($department, $row);
+
+	}
+
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = [];
+	$output['data'] = $department;
 	
 	mysqli_close($conn);
 

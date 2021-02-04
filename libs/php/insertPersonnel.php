@@ -1,9 +1,9 @@
 <?php
-
 	// example use from browser
-	// use insertDepartment.php first to create new dummy record and then specify it's id in the command below
-	// http://localhost/companydirectory/libs/php/deleteDepartmentByID.php?id= <id>
+	// http://localhost/companydirectory/libs/php/insertDepartment.php?name=New%20Department&locationID=1
 
+	// remove next two lines for production
+	
 	$executionStartTime = microtime(true);
 
 	include("config.php");
@@ -30,7 +30,27 @@
 
 	// $_REQUEST used for development / debugging. Remember to cange to $_POST for production
 
-	$query = 'DELETE FROM department WHERE id = ' . $_POST['id'];
+	$query = 'INSERT INTO personnel (firstName, lastName, email, departmentID) VALUES("' . $_POST['firstName'] . '","' . $_POST["lastName"] . '","' . $_POST['email'] . '",' . $_POST['departmentId'] . ')';
+
+	$result = $conn->query($query);
+	
+	if (!$result) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		mysqli_close($conn);
+
+		echo json_encode($output); 
+
+		exit;
+	}
+
+	// first query
+
+	$query = 'SELECT * from personnel WHERE email ="' . $_POST['email'] . '"';
 
 	$result = $conn->query($query);
 	
@@ -48,12 +68,21 @@
 		exit;
 
 	}
+   
+   	$personnel = [];
+
+	while ($row = mysqli_fetch_assoc($result)) {
+
+		array_push($personnel, $row);
+
+	}
+	
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = [];
+	$output['data'] = $personnel;
 	
 	mysqli_close($conn);
 

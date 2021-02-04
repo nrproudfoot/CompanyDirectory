@@ -14,8 +14,8 @@
 
 
 -- Dumping database structure for companydirectory
-CREATE DATABASE IF NOT EXISTS `companydirectory` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `companydirectory`; 
+CREATE DATABASE IF NOT EXISTS `dbs1370447` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `dbs1370447`; 
 
 -- Dumping structure for table companydirectory.department
 CREATE TABLE IF NOT EXISTS `department` (

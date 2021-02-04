@@ -1,6 +1,8 @@
 html, body{
     height: 100%;
     background-image: url(../images/skyscraper.jpg);
+    font-family: 'Roboto Slab';
+    font-weight: lighter;
 }
 .jumbotron{
     text-align: center;
@@ -12,11 +14,15 @@ html, body{
     background-position: center;
     background-size: cover;
     color: white;
+    font-weight: normal;
 }
 .jumbotron h1{
     
     color: white;
+    font-family: 'Big Shoulders Display', cursive;
+    cursor:default;
 }
+
 .selector{
     padding: 0.5em;
     border-left: 3px solid #777777;
@@ -24,6 +30,7 @@ html, body{
     border-collapse: collapse;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    cursor: pointer;
 }
 .selector-row{
      width: 100%;
@@ -55,8 +62,8 @@ html, body{
     justify-content:center;
     position: relative;
 }
-#search-button{
-    margin-left: 20px;
+.search-bar input{
+    width: 70%;
 }   
 #add-button{
     margin-right:0px;
@@ -68,7 +75,7 @@ html, body{
 .main-table{
     width: 100%;
     margin:0 auto;
-    height: 100%;
+    height: 83%;
     color: white;
     border-left: 2px solid #cccccc;
     border-right: 2px solid #777777;
@@ -77,7 +84,12 @@ html, body{
     border-radius: 10px;
     background-color: #097572;
 }
-   
+.main-table tr td{
+    cursor: pointer
+}
+.btn{
+    background-color: #dddddd;
+} 
 .scrollable{
     height: 85%;
     overflow: auto;
@@ -102,30 +114,41 @@ html, body{
     display: block;
     margin: 20px auto;
 }
+.modal .updated{
+    display: none;
+    text-align: center;
+}
 .modal .form{
     display:none;
 }
 .modal .form .name{
     display: block;
-    margin: 0 auto;
-    margin-left: 36%
-}
-.modal .form table{
-    display: block;
-    margin: 0 auto;
     width: 100%;
 }
 .modal .form select{
     display: block;
-    margin: 0 auto;
+    width: 100%;
 }
 .modal .form input{
     display: block;
-    margin: 0 auto;
+    width: 100%;
 }
 .modal .form button{
     display: block;
     margin: 0 auto;
 }
-
-
+.modal .new input, select{
+    width: 100%;
+}
+.center-bold{
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    margin: 0 auto;
+}
+#location-form-depts input, #new-location-form-depts input{
+    display: inline-block;
+    width: auto;
+    position: absolute;
+    right: 15px;
+}
