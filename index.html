@@ -9,10 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Monda&family=Roboto+Slab:wght@100;400&family=Trochut&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display&display=swap" rel="stylesheet">
-    
-
+    <link rel="stylesheet" href="resources/css/sortable-theme-minimal.css">
 </head>
 <body>
+    <div class="preloader"></div>
     <div class="jumbotron">
         <h1 class="display-4">Company Directory</h1>
         <div class="container">
@@ -38,7 +38,7 @@
         <br>
         <div class="row justify-content-center scrollable">
             <div class="col col-lg-auto  employee-div">
-            <table class="table table-responsive table-hover employee-table" >
+            <table class="table text-center table-responsive table-hover employee-table" data-sortable >
                 <thead>
                     <tr>
                         <th scope="col">Surname</th>
@@ -56,13 +56,13 @@
             </table>
             </div>
             <div class="col col-lg-auto departments-div">
-            <table class="table table-responsive table-hover departments-table" >
+            <table class="table text-center table-responsive-sm table-hover departments-table sortable-theme-minimal" data-sortable >
                 <thead>
                     <tr>
-                        <th scope="col">Department Number</th>
-                        <th scope="col">Department Name</th>
+                        <th data-sortable-type="numeric" scope="col">Number</th>
+                        <th scope="col">Name</th>
                         <th scope="col">Location</th>
-                        <th scope="col">Personnel</th>
+                        <th data-sortable-type="numeric" scope="col">Personnel</th>
                     </tr>
                 </thead>
                 <tbody class="table-body dept-body" >
@@ -73,13 +73,13 @@
             </table>
             </div>
             <div class="col col-lg-auto locations-div">
-            <table class="table table-responsive table-hover locations-table" >
+            <table class="table text-center table-responsive-sm table-hover locations-table" data-sortable >
             <thead>
                 <tr>
-                    <th scope="col">Location Number</th>
+                    <th data-sortable-type="numeric" scope="col">Number</th>
                     <th scope="col">Location Name</th>
-                    <th scope="col">Departments</th>
-                    <th scope="col">Personnel</th>
+                    <th data-sortable-type="numeric" scope="col">Departments</th>
+                    <th data-sortable-type="numeric" scope="col">Personnel</th>
                 </tr>
             </thead>
             <tbody class="table-body loc-body" >
@@ -157,6 +157,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="firstName" type="text" id="employee-form-name">
+                            <p id="update-employee-required-first"></p>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -165,6 +166,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="lastName" type="text" id="employee-form-surname"></h4>
+                            <p id="update-employee-required-last"></p>
                         </div>
                     </div>
                     <div class="row">
@@ -177,7 +179,8 @@
                             <label for="employee-form-dept">Department</label>
                         </div>
                         <div class="col-8">
-                            <select class="select-departments" name="department" id="employee-form-dept"></select>
+                            <select name="department" id="employee-form-dept"></select>
+                            <p id="update-employee-required-dept"></p>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -194,6 +197,7 @@
                         </div>
                         <div class="col-8">
                             <input name= "email" id="employee-form-email" type="text">
+                            <p id="update-employee-required-email"></p>
                         </div>
                     </div>
                 </div>
@@ -201,7 +205,7 @@
             <div class="modal-footer form">
                 <div class="form-group row">
                     <div class="col-6">
-                        <button class="btn" id ="back" type="submit">Back</button>
+                        <button class="btn back" type="submit">Back</button>
                     </div>
                     <div class="col-6">    
                         <button id="submit-employee-update" class="btn" type="submit" value="submit">Submit</button>
@@ -276,6 +280,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="name" type="text" id="department-form-name">
+                            <p id="update-department-required-name"></p>
                         </div>
                     </div>
                     <div class="row">
@@ -289,6 +294,7 @@
                         </div>
                         <div class="col-8">
                             <select class="select-locations" name="location" id="department-form-loc"></select>
+                            <p id="update-department-required-location"></p>
                         </div>
                     </div>
                 </div>
@@ -296,7 +302,7 @@
             <div class="modal-footer form">
                 <div class="form-group row">
                     <div class="col-6">
-                        <button class="btn" id ="back" type="button">Back</button>
+                        <button class="btn back" type="button">Back</button>
                     </div>
                     <div class="col-6">    
                         <button class="btn" type="submit" value="submit" id="submit-department-update">Submit</button>
@@ -362,6 +368,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="name" type="text" id="location-form-name">
+                            <p id="update-location-required-name"></p>
                         </div>
                     </div>
                     <div class="row">
@@ -386,7 +393,7 @@
             <div class="modal-footer form">
                 <div class="form-group row">
                     <div class="col-6">
-                        <button class="btn" id ="back" type="button">Back</button>
+                        <button class="btn back" type="button">Back</button>
                     </div>
                     <div class="col-6">    
                         <button class="btn" id="submit-update-location" type="submit">Submit</button>
@@ -416,6 +423,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="firstName" type="text" id="new-employee-form-name">
+                            <p id="new-employee-required-first"></p>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -424,6 +432,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="lastName" type="text" id="new-employee-form-surname"></h4>
+                            <p id="new-employee-required-last"></p>
                         </div>
                     </div>
                     <div class="row">
@@ -437,6 +446,7 @@
                         </div>
                         <div class="col-8">
                             <select class="select-departments" name="department" id="new-employee-form-dept"></select>
+                            <p id="new-employee-required-dept"></p>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -453,6 +463,7 @@
                         </div>
                         <div class="col-8">
                             <input id="new-employee-form-email" name="email" type="text">
+                            <p id="new-employee-required-email"></p>
                         </div>
                     </div>
                 </div>
@@ -488,6 +499,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="name" type="text" id="new-department-form-name">
+                            <p id="new-department-required-name"></p>
                         </div>
                     </div>
                     <div class="row">
@@ -498,9 +510,11 @@
                     <div class="form-group row">
                         <div class="col-4">
                             <label for="new-department-form-loc">Location</label>
+                            
                         </div>
                         <div class="col-8">
                             <select class="select-locations" name="location" id="new-department-form-loc"></select>
+                            <p id="new-department-required-location"></p>
                         </div>
                     </div>
                 </div>
@@ -536,6 +550,7 @@
                         </div>
                         <div class="col-8">
                             <input class="name" name="name" type="text" id="new-location-form-name">
+                            <p id="new-location-required-name"></p>
                         </div>
                     </div>
                     <div class="row">
@@ -574,6 +589,7 @@
 
     <script type="application/javascript" src="resources/js/jquery-2.2.3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="resources/js/sortable.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script type="module" src="resources/js/script.js"></script>
 </body>
