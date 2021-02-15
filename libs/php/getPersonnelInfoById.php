@@ -1,7 +1,8 @@
 <?php
 
-	// remove next two lines for production
-	
+	// example use from browser
+	// http://localhost/companydirectory/libs/php/getAll.php
+
 	$executionStartTime = microtime(true);
 
 	include("config.php");
@@ -23,10 +24,9 @@
 		echo json_encode($output);
 
 		exit;
+	}	
 
-    }	
-    
-	$query = 'SELECT * FROM personnel WHERE ' . $_POST['attr'] . '="' . $_POST['value'] . '"';
+	$query = 'SELECT p.id, p.lastName, p.firstName, p.email, d.id AS deptId, d.name AS dept, l.id AS locId, l.name AS location  FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (d.locationID = l.id) WHERE p.id =' . $_POST['id'];
 
 	$result = $conn->query($query);
 	

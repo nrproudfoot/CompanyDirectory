@@ -1,281 +1,185 @@
 $(document).on("ready",()=>{
-class Options{
-    constructor(){
-        this.section = "employees"
-    }
-    setSection(section){
-        if (section == "employees" || section == "departments" || section == "locations"){
-            this.section = section;
-        }
-    }
-    getSection(){
-        return this.section;
-    }
-}
-class Employee{
-    constructor(id,first,last,email,dept,location){
-        if (typeof(Number(id))=="number"){
-            this.id = Number(id);
-        }
-        if (typeof(first) == "string"){
-            this.firstName = first;
-        };
-        if (typeof(last) == "string"){
-            this.lastName = last;
-        };
-        if (validateEmail(email)){
-            this.email = email;
-        }
-        if (typeof(dept) == "string"){
-            this.department = dept;
-        };
-        if (typeof(location) == "string"){
-            this.location = location;
-        };
-    }
-    updateEmployee(first,last,email,dept,location){
-        if (first && typeof(first) == "string"){
-            this.setFirst(first);
-        };
-        if(last && typeof(last) == "string"){
-            this.setLast(last);
-        };
-        if (email && validateEmail(email)){
-            this.setEmail(email);
-        };
-        if (dept && typeof(dept) == "string"){
-            this.setDept(dept);
-        };
-        if (location && typeof(location) == "string"){
-            this.setLocation(location);
-        };
-    }
-    setFirst(name){
-        if (typeof(name) == "string"){
-            this.firstName = name;
-        };
-    }
-    setLast(name){
-        if (typeof(name) == "string"){
-            this.lastName = name;
-        };
-    }
-    setEmail(email){
-        if (validateEmail(email)){
-            this.email = email;
-        }
-    }
-    setDept(dept){
-        if (dept && typeof(dept) == "string"){
-            this.department = dept;
-        };
-    }
-    setLocation(location){
-        if (location && typeof(location) == "string"){
-            this.location = location;
-        };
-    }
-    getFirst(){
-        return this.firstName;
-    }
-    getLast(){
-        return this.lastName;
-    }
-    getEmail(){
-        return this.email;
-    }
-    getDept(){
-        return this.department;
-    }
-    getLocation(){
-        return this.location;
-    }
-    getId(){
-        return this.id;
-    }
-    getDeptId(){
-        let departments = data.getDepartments();
-        let id;
-        departments.forEach(dept=>{
-            if (dept.getName() == this.getDept()){
-                id = dept.getId();
-            }
-        });
-        return id;
-    }
-    getLocationId(){
-        let locations = data.getLocations();
-        let id;
-        locations.forEach(loc=>{
-            if (loc.getName() == this.getLocation()){
-                id = loc.getId();
-            };
-        });
-        return id;
-    }
-}
-class Department{
-    constructor(id,name,locationID,locationName=null){
-        if (typeof(Number(id)) == "number"){
-            this.id = Number(id);
-        }
-        if (typeof(name) == "string"){
-            this.name= name;
-        }
-        if (typeof(Number(locationID)) == "number"){
-            this.locationId = Number(locationID);
-        }
-        if (typeof(locationName) == "string"){
-            this.locationName = locationName;
-        }
-    }
-    setName(name){
-        if (typeof(name) == "string"){
-            this.name= name;
-        }
-    }
-    getName(){
-        return this.name;
-    }
-    getId(){
-        return this.id;
-    }
-    setLocationId(id){
-        if (typeof(Number(id)) == "number"){
-            this.locationId = Number(id);
-        }
-    }
-    getLocationId(){
-        return this.locationId;
-    }
-    setLocationName(name){
-        if (typeof(name) == "string"){
-            this.locationName = name;
-        }
-    }
-    getLocationName(){
-        if (this.locationName){
-            return this.locationName;
-        }
-        else {
-            let location = getLocationById(this.locationId);
-            let locationName = location.getName();
-            this.setLocationName(locationName);
-            return locationName;
-        }
-    }
-}
-class Location{
-    constructor(id,name){
-        if (typeof(Number(id)) == "number"){
-            this.id = Number(id);
-        }
-        if (typeof(name) == "string"){
-            this.name= name;
-        }
-    }
-    setName(name){
-        if (typeof(name) == "string"){
-            this.name= name;
-        }
-    }
-    getName(){
-        return this.name;
-    }
-    getId(){
-        return this.id;
-    }
-}
 class Data{
     constructor(){
-        this.employees = [];
-        this.departments = [];
-        this.locations = [];
-        this.currentEmployee;
-        this.currentDepartment;
-        this.currentLocation;
+        this.currentPersonnelId;
+        this.currentLocationId;
+        this.currentDepartmentId;
+        this.section = "personnel";
     }
-    setEmployees(employees){
-            this.employees = employees;
-    }
-    getEmployees(){
-        return this.employees;
-    }
-    setDepartments(departments){
-        this.departments = departments;
-    }
-    getDepartments(){
-        return this.departments;
-    }
-    setLocations(locations){
-        this.locations = locations;
-    }
-    getLocations(){
-        return this.locations;
-    }
-    getLocationById(id){
-        let locs = this.getLocations();
-        let location;
-        locs.forEach(loc =>{
-            if (loc.getId() == id){
-                location = loc;
-            }
-        });
-        return location;
-    }
-    setCurrentEmployee(employee){
-        this.currentEmployee = employee;
-    }
-    getCurrentEmployee(){
-        return this.currentEmployee;
-    }
-    setCurrentDepartment(department){
-        this.currentDepartment =department;
-    }
-    getCurrentDepartment(){
-        return this.currentDepartment;
-    }
-    setCurrentLocation(location){
-        this.currentLocation = location;
-    }
-    getCurrentLocation(){
-        return this.currentLocation;
-    }
-}
-function updateModal(object){
-    if (object instanceof Employee){
-        createOptions("employee-form-dept", data.getDepartments());
-        let personnel = object;
-        let first = personnel.getFirst();
-        let last = personnel.getLast();
-        let name = first + " " + last;
-        $("#employee-name").html(name);
-        $("#employee-dept").html(personnel.getDept());
-        $("#employee-loc").html(personnel.getLocation());
-        $("#employee-email").html(personnel.getEmail());
-        updateFormPlaceholders(personnel);
-
-    } else if (object instanceof Department){
-        let department = object;
-        let employees = data.getEmployees();
-        let count = 0;
-        employees.forEach(emp=>{
-            if(Number(emp.getDeptId()) == Number(department.getId())){
-                count ++;
-            }
-        });
-        $("#department-name").html(department.getName());
-        $("#department-loc").html(department.getLocationName());
-        $("#department-emp").html(count);
-        if (data.getCurrentLocation()){
-            addLocationDepts(data.getCurrentLocation().getId());
+    setCurrentPersonnelId(id){
+        if(typeof(Number(id)) == "number"){
+            this.currentPersonnelId = Number(id);
         }
-    } else if (object instanceof Location){
-        let location = object;
-        addLocationDepts(location.getId());
-        $("#location-name").html(location.getName());
     }
-    
+    setCurrentDepartmentId(id){
+        if(typeof(Number(id)) == "number"){
+            this.currentDepartmentId = Number(id);
+        }
+    }
+    setCurrentLocationId(id){
+        if(typeof(Number(id)) == "number"){
+            this.currentLocationId = Number(id);
+        }
+    }
+    getCurrentPersonnelId() {return this.currentPersonnelId}
+    getCurrentDepartmentId() {return this.currentDepartmentId}
+    getCurrentLocationId() {return this.currentLocationId}
+    setSection(section){
+        switch(section){
+            case "personnel":
+                this.section = "personnel";
+                break;
+            case "department":
+                this.section = "department";
+                break;
+            case "location":
+                this.section = "location";
+                break;
+            default:
+                console.log("Error: invalid section");
+        }
+    }
+    getSection() {return this.section};
+}
+
+function updateAllTables(){
+    getAllFiltered();
+    getDeptsFiltered();
+    getLocationInfo();
+}
+
+// Modal initialisation functions
+
+function updatePersonnelModal(id){
+    $.ajax({
+        url: "libs/php/getPersonnelInfoById.php",
+        type: 'POST',
+        data: {
+            id: id,
+        },
+        dataType: 'JSON',
+        success: function(result){
+            let employee = result.data[0];
+            let name = employee.firstName + ' ' + employee.lastName;
+            $("#employee-name").html(name);
+            $("#employee-dept").html(employee.dept);
+            $("#employee-loc").html(employee.location);
+            $("#employee-email").html(employee.email);
+            $("#employee-modal").modal('show');
+            $.ajax({
+                url: "libs/php/getAllDepartments.php",
+                type: 'GET',
+                dataType: 'JSON',
+                success: function(result){
+                    let departments = result.data;
+                    createOptions("employee-form-dept", departments);
+                    updatePersonnelPlaceholders(employee);
+                    $("#employee-modal").modal('show');
+                    $('body').addClass('modal-open');
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+}
+function updateDepartmentModal(id){
+    $.ajax({
+        url: "libs/php/getDepartmentInfoById.php",
+        type: 'POST',
+        data: {
+            id: id,
+        },
+        dataType: 'JSON',
+        success: function(result){
+            let dept = result.data[0];
+            $("#department-name").html(dept.name);
+            $("#department-loc").html(dept.location);
+            $("#department-emp").html(dept.personnel);
+            $("#department-modal").modal('show');
+           $.ajax({
+                url: "libs/php/getAllLocations.php",
+                type: 'GET',
+                dataType: 'JSON',
+                success: function(result){
+                    let locations = result.data;
+                    createOptions("department-form-loc", locations);
+                    updateDepartmentPlaceholders(dept);
+                    $("#department-modal").modal('show');
+                    $('body').addClass('modal-open');
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+}
+function updateLocationModal(id){
+    $.ajax({
+        url: "libs/php/getLocationInfoById.php",
+        type: 'POST',
+        data: {
+            id: id,
+        },
+        dataType: 'JSON',
+        success: function(result){
+            if(result.data.length > 0){
+                let loc = result.data;
+                $("#location-name").html(loc[0].name);
+                let table = $("#location-modal-depts");
+                table.find("tr").remove();
+                let total = 0;
+                loc.forEach(dept=>{
+                    total += Number(dept.personnel);
+                    table.append('<tr><td>'
+                    + dept.deptName
+                    + '</td><td>'
+                    + dept.personnel
+                    + '</td></tr>');
+                })
+                table.append('<tr class="table-active"><th>Total</th><td>'
+                + total
+                + '</th></tr>');
+                $("#location-modal").modal('show');
+                $('body').addClass('modal-open');
+                updateLocationPlaceholders(loc[0].name,loc[0].id);
+            } else {
+                $.ajax({
+                    url: "libs/php/getLocationById.php",
+                    type: 'POST',
+                    data: {
+                        id: id,
+                    },
+                    dataType: 'JSON',
+                    success: function(result){
+                        let loc = result.data[0];
+                        $("#location-name").html(loc.name);
+                        let table = $("#location-modal-depts");
+                        table.find("tr").remove();
+                        table.append('<tr><td>None</td><td>None</td></tr>');
+                        table.append('<tr class="table-active"><th>Total</th><td>0</th></tr>');
+                        $("#location-modal").modal('show');
+                        $('body').addClass('modal-open');
+                        updateLocationPlaceholders(loc.name,loc.id);
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
+        }},
+        error: function(err) {
+            console.log(err);
+        }
+    });
 }
 
 function validateEmail(inputText){
@@ -287,95 +191,50 @@ function validateEmail(inputText){
         }
 }
 
-function getAll(data,id=null){
+// GET main tables from database
+
+function getAll(){
     $.ajax({
         url: "libs/php/getAll.php",
         type: 'GET',
         dataType: 'JSON',
         success: function(result){
-            let employeesArray = [];
-            result.data.forEach(p => {
-                let employee = new Employee(p.id,p.firstName,p.lastName,p.email,p.department,p.location);
-                employeesArray.push(employee);
-            })
-            data.setEmployees(employeesArray);
-            renderEmployees(data.getEmployees());
-            if (data.getDepartments() && data.getLocations()){
-                renderDepartments(data.getDepartments(),data);
-                renderLocations(data.getLocations(),data);
-            }
-            if (id){
-                let employee = getEmployeeById(id);
-                data.setCurrentEmployee(employee);
-            };
+            renderPersonnel(result.data);
         },
         error: function(err) {
             console.log(err);
         }
     });
 }
-function getAllDepartments(data){
+function getDepartmentInfo(){
     $.ajax({
-        url: "libs/php/getAllDepartments.php",
+        url: "libs/php/getDepartmentInfo.php",
         type: 'GET',
         dataType: 'JSON',
         success: function(result){
-            let departmentsArray = [];
-            result.data.forEach(p => {
-                let department = new Department(p.id,p.name,p.locationID);
-                departmentsArray.push(department);
-            })
-            data.setDepartments(departmentsArray);
-            if(data.getLocations()){
-                renderDepartments(data.getDepartments(),data);
-                renderLocations(data.getLocations(),data);
-            }
-            renderEmployees(data.getEmployees());
-            createOptions('employee-form-dept', data.getDepartments());
-            createOptions('new-employee-form-dept', data.getDepartments());
+            renderDepartments(result.data);
         },
         error: function(err) {
             console.log(err);
         }
     });
 }
-function getAllLocations(data){
+function getLocationInfo(){
     $.ajax({
-        url: "libs/php/getAllLocations.php",
+        url: "libs/php/getLocationInfo.php",
         type: 'GET',
         dataType: 'JSON',
         success: function(result){
-            let locationsArray = [];
-            result.data.forEach(p => {
-                let location = new Location(p.id,p.name);
-                locationsArray.push(location);
-            })
-            data.setLocations(locationsArray);
-            renderLocations(data.getLocations(),data);
-            createOptions('new-department-form-loc', data.getLocations());
+            renderLocations(result.data);
         },
         error: function(err) {
             console.log(err);
         }
     });
 }
-function getDepartmentsWhere(attr,value,callback){
-    $.ajax({
-        url: "libs/php/getDepartmentsWhere.php",
-        type: 'POST',
-        data: {
-            attr: attr,
-            value: value,
-        },
-        dataType: 'JSON',
-        success: function(result){
-            callback(result);
-        },
-        error: function(err) {
-            console.log(err);
-        }
-    });
-}
+
+// DELETE entries from database
+
 function deletePersonnelById(id){
     $.ajax({
         url: "libs/php/deletePersonnelById.php",
@@ -385,7 +244,7 @@ function deletePersonnelById(id){
         },
         dataType: 'JSON',
         success: function(result){
-            getAll(data);
+            getAllFiltered();
         },
         error: function(err) {
             console.log(err);
@@ -394,18 +253,16 @@ function deletePersonnelById(id){
 };
 function deleteDepartmentById(id){
     $.ajax({
-        url: "libs/php/getPersonnelWhere.php",
+        url: "libs/php/getDepartmentInfoById.php",
         type: 'POST',
         data: {
-            attr: "department",
-            value: id,
+            id: id,
         },
         dataType: 'JSON',
         success: function(result){
-            if (result.data.length != 0){
-                let count= result.data.length;
-                alert("Department cannot be delete as it contains " + count + " employees.");
-            } else if(confirm("Are you sure you want to remove " + getDepartmentById(id).getName() + " from Departments?")){
+            if (result.data[0].personnel != 0){
+                alert("Department cannot be deleted as it contains " + result.data[0].personnel + " employees.");
+            } else if(confirm("Are you sure you want to remove " + result.data[0].name + " from Departments?")){
                     $.ajax({
                         url: "libs/php/deleteDepartmentByID.php",
                         type: 'POST',
@@ -414,10 +271,12 @@ function deleteDepartmentById(id){
                         },
                         dataType: 'JSON',
                         success: function(result){
-                            getAll(data);
-                            getAllLocations(data);
-                            getAllDepartments(data);
+                            getAllFiltered();
+                            getDeptsFiltered();
+                            getLocationInfo();
                             $("#department-modal").modal('hide');
+                            addCheckbox("options-departments");
+                            addLocationsCheckbox("options-locations");
                         },
                         error: function(err) {
                             console.log(err);
@@ -432,18 +291,16 @@ function deleteDepartmentById(id){
 }
 function deleteLocationById(id){
     $.ajax({
-        url: "libs/php/getDepartmentsWhere.php",
+        url: "libs/php/getLocationDepartmentsById.php",
         type: 'POST',
         data: {
-            attr: "location",
-            value: id,
+            id: id,
         },
         dataType: 'JSON',
         success: function(result){
-            if (result.data.length != 0){
-                let count= result.data.length;
-                alert("Location cannot be delete as it contains " + count + " departments.");
-            } else if (confirm("Are you sure you want to remove " + getLocationById(id).getName() + " from Locations?")){
+            if (Number(result.data[0].departments) != 0){
+                alert("Location cannot be deleted as it contains " + result.data[0].departments + " departments.");
+            } else if (confirm("Are you sure you want to remove " + result.data[0].name +" from Locations?")){
                 $.ajax({
                     url: "libs/php/deleteLocationById.php",
                     type: 'POST',
@@ -452,10 +309,12 @@ function deleteLocationById(id){
                     },
                     dataType: 'JSON',
                     success: function(result){
-                        getAll(data);
-                        getAllLocations(data);
-                        getAllDepartments(data);
+                        getAllFiltered();
+                        getLocationInfo();
+                        getDeptsFiltered();
                         $("#location-modal").modal('hide');
+                        addCheckbox("options-departments");
+                        addLocationsCheckbox("options-locations");
                     },
                     error: function(err) {
                         console.log(err);
@@ -468,35 +327,60 @@ function deleteLocationById(id){
         }
     });
 }
+
+// CREATE new entries in database
+
 function addLocation(name,departments){
     $.ajax({
-        url: "libs/php/insertLocation.php",
+        url: "libs/php/getLocationsWhere.php",
         type: 'POST',
         data: {
-            name: name,
+            attr: "name",
+            value: name
         },
         dataType: 'JSON',
         success: function(result){
-            let id = result.data[0].id;
-            departments.forEach(deptId=>{
-                let dept = getDepartmentById(deptId);
-                let name = dept.getName();
-                let locationId = id;
-                updateDepartmentById(dept,name,locationId);
-            })
-            let name = result.data[0].name;
-            data.setCurrentLocation(new Location(id,name));
-            getAll(data);
-            getAllLocations(data);
-            getAllDepartments(data);
-            updateModal(data.getCurrentLocation());
-            updateFormPlaceholders(data.getCurrentLocation());
-            $(".updated").css("display","none");
-            $(".info").css("display","block");
-            $(".form").css("display","none");
-            $("#new-location-modal").modal('hide');
-            $("#location-modal").modal('show');
-            renderLocations(data.getLocations());
+            let ready = true;
+            console.log(result);
+            if (result.data.length > 0){
+                $("#new-location-required-name").html("Location name already in use");
+                ready = false;
+            }
+            if(ready){
+                $.ajax({
+                    url: "libs/php/insertLocation.php",
+                    type: 'POST',
+                    data: {
+                        name: name,
+                    },
+                    dataType: 'JSON',
+                    success: function(result){
+                        console.log(result);
+                        let id = result.data[0].id;
+                        departments.forEach(dept=>{
+                            updateDepartmentById(dept,null,id)
+                        });
+                        let name = result.data[0].name;
+                        data.setCurrentLocationId(id);
+                        getAllFiltered();
+                        getLocationInfo();
+                        getDeptsFiltered();
+                        $("#new-location-modal").modal('hide');
+                        updateLocationModal(id);
+                        $(".updated").css("display","none");
+                        $(".info").css("display","block");
+                        $(".form").css("display","none");
+                        addCheckbox("options-departments");
+                        addLocationsCheckbox("options-locations");
+                        
+                       
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
+            }
+        
         },
         error: function(err) {
             console.log(err);
@@ -505,28 +389,51 @@ function addLocation(name,departments){
 }
 function addDepartment(name,locationId){
     $.ajax({
-        url: "libs/php/insertDepartment.php",
+        url: "libs/php/getDepartmentsWhere.php",
         type: 'POST',
         data: {
-            name: name,
-            locationId: locationId,
+            attr: "name",
+            value: name,
         },
         dataType: 'JSON',
         success: function(result){
-            let id = result.data[0].id;
-            let name = result.data[0].name;
-            let locationId = Number(result.data[0].locationID);
-            let location = getLocationById(locationId).getName();
-            let newDepartment = new Department(id,name,locationId,location);
-            data.setCurrentDepartment(newDepartment);
-            getAllDepartments(data);
-            updateModal(newDepartment);
-            updateFormPlaceholders(newDepartment);
-            $(".updated").css("display","none");
-            $(".info").css("display","block");
-            $(".form").css("display","none");
-            $("#new-department-modal").modal('hide');
-            $("#department-modal").modal('show');
+            console.log(result);
+            let ready = true;
+            if (result.data.length > 0){
+                $("#new-department-required-name").html("Department name already in use");
+                ready = false;
+            }
+            if (ready){
+                $.ajax({
+                    url: "libs/php/insertDepartment.php",
+                    type: 'POST',
+                    data: {
+                        name: name,
+                        locationId: locationId,
+                    },
+                    dataType: 'JSON',
+                    success: function(result){
+                        let id = result.data[0].id;
+                        data.setCurrentDepartmentId(id);
+                        getDepartmentFiltered();
+                        $("#new-department-modal").modal('hide');
+                        updateDepartmentModal(id);
+                        updateDepartmentPlaceholders(id);
+                        $(".updated").css("display","none");
+                        $(".info").css("display","block");
+                        $(".form").css("display","none");
+                        addCheckbox("options-departments");
+                        addLocationsCheckbox("options-locations");
+                       
+                       
+                        
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
+            }
+            
         },
         error: function(err) {
             console.log(err);
@@ -534,95 +441,80 @@ function addDepartment(name,locationId){
     });
 }
 function addPersonnel(first,last,email,department){
+    let ready = true;
     $.ajax({
-        url: "libs/php/insertPersonnel.php",
+        url: "libs/php/getPersonnelWhere.php",
         type: 'POST',
         data: {
-            firstName: first,
-            lastName:last,
-            email: email,
-            departmentId: department,
+            attr: "email",
+            value: email,
         },
         dataType: 'JSON',
         success: function(result){
-            getAll(data);
-            let id = Number(result.data[0].id);
-            let dept = getDepartmentById(department);
-            let location = dept.getLocationName();
-            let deptName = dept.getName();
-            data.setCurrentEmployee(new Employee(id,first,last,email,deptName,location));
-            updateModal(data.getCurrentEmployee());
-            $(".updated").css("display","none");
-            $(".info").css("display","block");
-            $(".form").css("display","none"); 
-            $("#new-employee-modal").modal('hide');
-            $("#employee-modal").modal('show');
-        },
+            console.log("email check",result);
+            if (result.data.length > 0){
+                $("#new-employee-required-email").html("Email address already in database");
+                ready = false;
+            }
+            if(ready){
+                $.ajax({
+                    url: "libs/php/insertPersonnel.php",
+                    type: 'POST',
+                    data: {
+                        firstName: first,
+                        lastName:last,
+                        email: email,
+                        departmentId: department,
+                    },
+                    dataType: 'JSON',
+                    success: function(result){
+                        getAllFiltered();
+                        let id = Number(result.data[0].id);
+                        $("#new-employee-modal").modal('hide');
+                        updatePersonnelModal(id);
+                        $(".updated").css("display","none");
+                        $(".info").css("display","block");
+                        $(".form").css("display","none"); 
+                
+                        
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
+        };
+    },
         error: function(err) {
             console.log(err);
         }
     });
-}
-function getEmployeeById(id){
-    let employees = data.getEmployees();
-    let employee;
-    employees.forEach(emp=>{
-        if (emp.getId() == id){
-            employee = emp;
-        }
-    });
-    return employee;
-}
-function getDepartmentById(id){
-    let departments = data.getDepartments();
-    let department;
-    departments.forEach(dept =>{
-        if(dept.getId() == id){
-            department = dept;
-        }
-    });
-    return department;
-}
-function getLocationById(id){
-    let locations = data.getLocations();
-    let location;
-    locations.forEach(loc=>{
-        if(loc.getId() == id){
-            location = loc;
-        }
-    });
-    return location;
-}
+    }
 
-function updateLocationById(location, name, departmentIds){
-    location.setName(name);
-    departmentIds.forEach(id=>{
-        let department = getDepartmentById(id);
-        let name = department.getName();
-        let locationId = location.getId();
-        updateDepartmentById(department,name,locationId);
+// UPDATE entries in database
+
+function updateLocationById(id, name, departmentIds){
+    console.log(departmentIds)
+    departmentIds.forEach(deptId=>{
+        console.log(deptId);
+        updateDepartmentById(deptId,null,id);
     })
     $.ajax({
         url: "libs/php/updateLocationById.php",
         type: 'POST',
         data: {
-            id: location.getId(),
+            id: id,
             name: name,
         },
         dataType: 'JSON',
         success: function(result){
-            getAll(data);
-            getAllLocations(data);
-            getAllDepartments(data);
+            updateLocationModal(id);
+            updateAllTables();
             setTimeout(()=>{
-                if (data.getLocations()){
-                    renderLocations(data.getLocations(),data);
-                };
-                data.setCurrentLocation(new Location(result.data.result[0].id,result.data.result[0].name));
-                updateModal(new Location(result.data.result[0].id,result.data.result[0].name));
                 $('.form').css("display","none");
                 $(".updated").css("display","block");
                 $(".info").css("display","block");
+                addCheckbox("options-departments");
+                addLocationsCheckbox("options-locations");
             }, 50)
         },
         error: function(err) {
@@ -631,41 +523,30 @@ function updateLocationById(location, name, departmentIds){
     });
 
 }
-function updateDepartmentById(department, name, locationId){
-    department.setName(name);
-    department.setLocationId(locationId);
-    let locationName;
-    data.getLocations().forEach(loc=>{
-        if (loc.getId() == locationId){
-            locationName = loc.getName();
-        }
-    })
-    department.setLocationName(locationName);
+function updateDepartmentById(id, name=null, locationId){
     $.ajax({
         url: "libs/php/updateDepartmentById.php",
         type: 'POST',
         data: {
             name: name,
-            id: department.getId(),
+            id: id,
             locationId: locationId,
         },
         dataType: 'JSON',
         success: function(result){
-            getAll(data);
-            let id = result.data.result[0].id;
-            let name = result.data.result[0].name;
-            let locationId = Number(result.data.result[0].locationID);
-            let location = getLocationById(locationId).getName();
-            let department = new Department(id,name,locationId,location);
-            updateModal(department);
-            if (data.getLocations()){
-                renderLocations(data.getLocations(),data);
+            console.log(result);
+            if(name){
+                updateDepartmentModal(id);
+                updateAllTables();
+                setTimeout(()=>{
+                    $('.form').css("display","none");
+                    $(".updated").css("display","block");
+                    $(".info").css("display","block");
+                    addCheckbox("options-departments");
+                    addLocationsCheckbox("options-locations");
+                }, 500)
             }
-            setTimeout(()=>{
-                $('.form').css("display","none");
-                $(".updated").css("display","block");
-                $(".info").css("display","block");
-            }, 50)
+            
         },
         error: function(err) {
             console.log(err);
@@ -673,53 +554,34 @@ function updateDepartmentById(department, name, locationId){
     });
 
 }
-function updatePersonnelById(employee,first,last,email,department){
-    employee.setFirst(first);
-    employee.setLast(last);
-    employee.setEmail(email);
-    employee.setDept(department);
-    let departments = data.getDepartments();
-    let deptId;
-    departments.forEach(dept =>{
-        if (dept.getName() == employee.getDept()){
-            deptId = dept.getId();
-        }
-    });
-
+function updatePersonnelById(id,first,last,email,department){
     $.ajax({
         url: "libs/php/updatePersonnelById.php",
         type: 'POST',
         data: {
-            firstName: employee.getFirst(),
-            lastName: employee.getLast(),
-            email: employee.getEmail(),
-            id: employee.getId(),
+            firstName: first,
+            lastName: last,
+            email: email,
+            id: id,
             departmentId: department,
         },
         dataType: 'JSON',
         success: function(result){
-            getAll(data);
-            let id = Number(result.data.result[0].id);
-            let first = result.data.result[0].firstName;
-            let last = result.data.result[0].lastName;
-            let email = result.data.result[0].email;
-            let deptId = Number(result.data.result[0].departmentID);
-            let dept = getDepartmentById(deptId);
-            let location = dept.getLocationName();
-            let deptName = dept.getName();
-            let employee = new Employee(id,first,last,email,deptName,location);
-            updateModal(employee);
+            getAllFiltered();
+            updatePersonnelModal(id);
             setTimeout(()=>{
                 $('.form').css("display","none");
                 $(".updated").css("display","block");
                 $(".info").css("display","block");
-            }, 50)
+            }, 500)
         },
         error: function(err) {
             console.log(err);
         }
     });
 }
+
+
 function toTitleCase(str) {
     return str.toLowerCase().split(' ').map(function (word) {
       return (word.charAt(0).toUpperCase() + word.slice(1));
@@ -749,7 +611,6 @@ function departmentSearch(){
     departments.forEach(dept=>{
         let name = dept.getName();
         let location = dept.getLocationName();
-        console.log(location);
         if (name.match(term) || name.includes(term) ||name.match(term.toLowerCase()) || name.includes(term.toLowerCase()) || location.match(term) || location.includes(term) || location.match(term.toLowerCase()) || location.includes(term.toLowerCase())){
             departmentMatches.push(dept);
         }
@@ -768,102 +629,75 @@ function locationSearch(){
     renderLocations(locationMatches,data);
     })
 }
-function renderEmployees(employees){
+function renderPersonnel(personnel){
     let table = $(".employee-table");
     table.find("tbody tr").remove();
-    employees.forEach(emp =>{
-        let id = emp.getId();
+    personnel.forEach(emp =>{
+        let id = emp.id;
         table.append('<tr class="employee-row" id="employee'
         + id 
         + '">'
         + "<td>"
-        + emp.getLast()
+        + emp.lastName
         + "</td>"
         + "<td>"
-        + emp.getFirst()
+        + emp.firstName
         + "</td>"
         + "<td>"
-        + emp.getEmail()
+        + emp.email
         + "</td>"
         + "<td>"
-        + emp.getDept()
+        + emp.department
         + "</td>"
         + "<td>"
-        + emp.getLocation()
+        + emp.location
         + "</td>"
         + "</tr>");
         id ++;
     });
     Sortable.initTable(table);
 }
-function renderDepartments(departments,data){
+function renderDepartments(departments){
     let table = $(".departments-table");
     table.find("tbody tr").remove();
-    let employees = data.getEmployees();
     departments.forEach(dept =>{
-        let count = 0;
-        let loc;
-        if(data.getLocations()){
-            loc = dept.getLocationName();
-        } else {
-            loc = '';
-        }
-        employees.forEach(emp=>{
-            if(emp.getDept() == dept.getName()){
-                count ++;
-            }
-        })
         table.append('<tr class="department-row" id="department'
-        + dept.getId()
+        + dept.id
         + '">'
         + "<td>"
-        + String(dept.getId())
+        + String(dept.id)
         + "</td>"
         + "<td>"
-        + dept.getName()
+        + dept.name
         + "</td>"
         +"<td>"
-        + loc
+        + dept.location
         + "</td>"
         +"<td>"
-        + String(count)
+        + dept.personnel
         + "</td>"
         + "</tr>");
     });
     Sortable.initTable(table);
 }
-function renderLocations(locations,data){
+function renderLocations(locations){
     let table = $(".locations-table");
     table.find("tbody tr").remove();
-    let departments = data.getDepartments();
-    let employees = data.getEmployees();
     locations.forEach(loc =>{
-        let deptCount = 0;
-        let empCount = 0;
-        departments.forEach(dept=>{
-            if(dept.getLocationId() == loc.getId()){
-                deptCount ++;
-                employees.forEach(emp=>{
-                    if(emp.getDeptId() == dept.getId()){
-                        empCount ++;
-                    }
-                })
-            }
-        });
         table.append('<tr class="department-row" id="location'
-        + loc.getId() 
+        + loc.id 
         + '">'
         + "<td>"
-        + String(loc.getId())
+        + String(loc.id)
         + "</td>"
         + "<td>"
-        + loc.getName()
+        + loc.name
         + "</td>"
         + "<td>"
-        + String(deptCount)
+        + loc.departments
         + "</td>"
         + "<td>"
-        + String(empCount)
+        + loc.personnel
         + "</td>"
         + "</tr>");
     });
@@ -876,21 +710,43 @@ function createOptions(elementId, array){
         parent.removeChild(parent.firstChild);
     }
     array.forEach(data =>{
-        let opt = data.getName();
+        let opt = data.name;
         let el = document.createElement("option");
         el.textContent = opt;
-        el.value = Number(data.getId());
-        el.id = "option" + data.getId();
+        el.value = Number(data.id);
+        el.id = "option" + data.id;
         parent.appendChild(el);
     });
 }
 
-function getFullName(employee){
-    let first = employee.getFirst();
-    let last = employee.getLast();
-    return first + " " + last;
-}
 
+function updatePersonnelPlaceholders(personnelInfo){
+    let emp = personnelInfo;
+    $("#employee-form-name").val(emp.firstName);
+    $("#employee-form-surname").val(emp.lastName);
+    $("#employee-form-email").val(emp.email);
+    $("#employee-form-dept").val(emp.deptId);
+    $("#employee-form-loc").html(emp.location);
+    $("#new-employee-required-email").html('');
+    $("#new-employee-required-first").html('');
+    $("#new-employee-required-last").html('');
+    $("#new-employee-required-dept").html('');
+    $("#update-employee-required-email").html('');
+    $("#update-employee-required-first").html('');
+    $("#update-employee-required-last").html('');
+    $("#update-employee-required-dept").html('');
+}
+function updateDepartmentPlaceholders(departmentInfo){
+    let dept = departmentInfo;
+    $("#update-department-required-location").html("");
+    $("#update-department-required-name").html("");
+    $("#department-form-name").val(dept.name);
+    $("#department-form-loc").val(dept.locId);
+}
+function updateLocationPlaceholders(name,id){
+    $("#location-form-name").val(name); 
+    addCheckbox("location-form-depts",id)
+}
     function updateFormPlaceholders(object){
         if (object instanceof Employee){
             let employee = object;
@@ -931,55 +787,137 @@ function getFullName(employee){
             $("#location-form-name").val(location.getName());
         }   
     }
-
-
-
-function addCheckbox(targetElement,locations = null) {
-    let departments = data.getDepartments();
+function addLocationsCheckbox(targetElement){
     targetElement = document.getElementById(targetElement);
     while(targetElement.hasChildNodes()){
         targetElement.removeChild(targetElement.firstChild);
     }
-    departments.forEach(dept=>{ 
-        let label = document.createElement("label");
-        let opt = dept.getName();
-        label.setAttribute("for", opt);
-        label.innerHTML = opt;
-        targetElement.append(label);
-        let el = document.createElement("input");
-        el.type = "checkbox";
-        if (locations && locations.includes(dept.getName())){
-            el.setAttribute("checked");
+    $.ajax({
+        url: "libs/php/getLocationInfo.php",
+        type: 'GET',
+        dataType: 'JSON',
+        success: function(result){
+            let locArray = result.data;
+            locArray.forEach(loc=>{
+                let label = document.createElement("label");
+                let opt = loc.name;
+                label.setAttribute("for", opt);
+                label.innerHTML = opt;
+                targetElement.append(label);
+                let el = document.createElement("input");
+                el.type = "checkbox";
+                el.name = opt;
+                el.value = loc.id;
+                el.id = loc.id;
+                targetElement.append(el);
+                let br = document.createElement('br');
+                targetElement.append(br);
+            });
+            $("#options-departments").find(':checkbox').prop("checked",true);
+            $("#options-locations").find(':checkbox').prop("checked",true);  
+        },
+        error: function(err) {
+            console.log(err);
         }
-        el.name = opt;
-        el.value = dept.getId();
-        el.id = dept.getId();
-        targetElement.append(el);
-        let br = document.createElement('br');
-        targetElement.append(br);
-    })
-};
-function addLocationDepts(locId){
-    getDepartmentsWhere("location",locId,(result)=>{
-        let departments = result.data;
-        let location = document.getElementById("location-depts");
-        $("#location-depts").empty();
-        departments.forEach(dept=>{
-            let li = document.createElement("li");
-            let text = dept.name;
-            li.innerHTML = text;
-            location.append(li);
-    })
-    })
+    });
 }
-/* Global options and data objects */
-let options = new Options();
-let data = new Data();
+
+
+function addCheckbox(targetElement,locationId=null) {
+    targetElement = document.getElementById(targetElement);
+    while(targetElement.hasChildNodes()){
+        targetElement.removeChild(targetElement.firstChild);
+    }
+    $.ajax({
+        url: "libs/php/getAllDepartments.php",
+        type: 'GET',
+        dataType: 'JSON',
+        success: function(result){
+            let departments = result.data;
+            if(locationId){
+                $.ajax({
+                    url: "libs/php/getLocationInfoById.php",
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {
+                        id: locationId,
+                    },
+                    success: function(result){
+                        let locationInfo = result.data;
+                        let deptArray = [];
+                        locationInfo.forEach(dept=>{
+                            let name = dept.deptName;
+                            deptArray.push(name);
+                        })
+                        departments.forEach(dept=>{ 
+                            let label = document.createElement("label");
+                            let opt = dept.name;
+                            label.setAttribute("for", opt);
+                            label.innerHTML = opt;
+                            targetElement.append(label);
+                            let el = document.createElement("input");
+                            el.type = "checkbox";
+                            if (deptArray.includes(dept.name)){
+                                el.setAttribute("checked",true);
+                            }
+                            el.name = opt;
+                            el.value = dept.id;
+                            el.id = dept.id;
+                            targetElement.append(el);
+                            let br = document.createElement('br');
+                            targetElement.append(br);
+                        });
+                        $("#options-departments").find(':checkbox').prop("checked",true);
+                        $("#options-locations").find(':checkbox').prop("checked",true);
+                        
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
+            } else {
+                departments.forEach(dept=>{ 
+                    let label = document.createElement("label");
+                    let opt = dept.name;
+                    label.setAttribute("for", opt);
+                    label.innerHTML = opt;
+                    targetElement.append(label);
+                    let el = document.createElement("input");
+                    el.type = "checkbox";
+                    el.name = opt;
+                    el.value = dept.id;
+                    el.id = dept.id;
+                    targetElement.append(el);
+                    let br = document.createElement('br');
+                    targetElement.append(br);
+                });
+                $("#options-departments").find(':checkbox').prop("checked",true);
+                $("#options-locations").find(':checkbox').prop("checked",true);
+            }  
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+};
+
+//Watch for closing modals
+$('.modal').on('hidden.bs.modal', function () {
+    //If there are any visible
+    if($(".modal:visible").length > 0) {
+        //Slap the class on it (wait a moment for things to settle)
+        setTimeout(function() {
+            $('body').addClass('modal-open');
+        },200)
+    }
+});
 
 /* Tab animations */
 $(".employees").on("click",(e)=>{
     $("#search-bar").val('');
-    renderEmployees(data.getEmployees(),data);
+    getAllFiltered();
+    data.setSection("personnel");
+    $("#filter-button").css("display","");
     $(".main-table").css("background-color","#097572");
     $(".locations").css({"margin-bottom":"0px","z-index":"1","border-left":"2px solid #777777"});
     $(".departments").css({"margin-bottom":"0px","z-index":"1","border-left":"2px solid #777777"});
@@ -988,13 +926,12 @@ $(".employees").on("click",(e)=>{
     $(".departments-div").css("display","none");
     $(".locations-div").css("display","none");
     $("#search-bar").attr("placeholder","Search personnel");
-    options.setSection("employees");
 });
 $(".departments").on("click",(e)=>{
     $("#search-bar").val('');
-    if (data.getDepartments() && data.getLocations()){
-        renderDepartments(data.getDepartments(),data);
-    };
+    data.setSection("department");
+    getDeptsFiltered();
+    $("#filter-button").css("display","");
     $(".main-table").css("background-color","#32a8a4");
     $(".locations").css({"margin-bottom":"0px","z-index":"1","border-left":"2px solid #777777"});
     $(".employees").css({"margin-bottom":"0px","z-index":"1","border-left":"2px solid #777777"});
@@ -1003,13 +940,12 @@ $(".departments").on("click",(e)=>{
     $(".departments-div").css("display","block");
     $(".locations-div").css("display","none");
     $("#search-bar").attr("placeholder","Search departments");
-    options.setSection("departments");
 });
 $(".locations").on("click",(e)=>{
     $("#search-bar").val('');
-    if (data.getLocations()){
-        renderLocations(data.getLocations(),data);
-    };
+    data.setSection("location");
+    getLocationInfo();
+    $("#filter-button").css("display","none");
     $(".main-table").css("background-color","#99bfbe");
     $(".employees").css({"margin-bottom":"0px","z-index":"1","border-left":"2px solid #777777"});
     $(".departments").css({"margin-bottom":"0px","z-index":"1","border-left":"2px solid #777777"});
@@ -1018,7 +954,6 @@ $(".locations").on("click",(e)=>{
     $(".departments-div").css("display","none");
     $(".locations-div").css("display","block");
     $("#search-bar").attr("placeholder","Search locations");
-    options.setSection("locations");
 });
 
 $(".employee-body").on("click",(e)=>{
@@ -1027,10 +962,8 @@ $(".employee-body").on("click",(e)=>{
     $(".form").css("display","none");  
     let id = e.toElement.parentElement.id;
     id = id.replace("employee","");
-    let employee = getEmployeeById(id);
-    data.setCurrentEmployee(employee);
-    updateModal(employee);
-    $("#employee-modal").modal('show');
+    data.setCurrentPersonnelId(id);
+    updatePersonnelModal(id);
 });
 $(".dept-body").on("click",(e)=>{
     $(".updated").css("display","none");
@@ -1038,14 +971,8 @@ $(".dept-body").on("click",(e)=>{
     $(".form").css("display","none");  
     let id = e.toElement.parentElement.id;
     id = id.replace("department","");
-    let department = getDepartmentById(id);
-    data.setCurrentDepartment(department);
-    let locid = department.getLocationId();
-    let location = getLocationById(locid);
-    createOptions("department-form-loc", data.getLocations());
-    updateFormPlaceholders(department);
-    updateModal(department);
-    $("#department-modal").modal('show');
+    data.setCurrentDepartmentId(id);
+    updateDepartmentModal(id);
 });
 $(".loc-body").on("click",(e)=>{
     $(".updated").css("display","none");
@@ -1053,19 +980,12 @@ $(".loc-body").on("click",(e)=>{
     $(".form").css("display","none");  
     let id = e.toElement.parentElement.id;
     id = id.replace("location","");
-    let location = getLocationById(id);
-    data.setCurrentLocation(location);
-    addLocationDepts(location.getId());
-    addCheckbox("location-form-depts");
-    updateFormPlaceholders(location);
-    $("#location-name").html(location.getName())
-    $("#location-modal").modal('show');
+    console.log(id);
+    data.setCurrentLocationId(id);
+    updateLocationModal(id);
+    addCheckbox("location-form-depts",id);
 })
 $(".edit").on("click",(e)=>{
-    createOptions('department-form-loc', data.getLocations());
-    createOptions("new-employee-form-dept", data.getDepartments());
-    updateFormPlaceholders(data.getCurrentDepartment());
-    updateFormPlaceholders(data.getCurrentLocation());
     $(".info").css("display","none");
     $(".form").css("display","block");
     $(".updated").css("display","none");
@@ -1077,8 +997,8 @@ $(".back").on("click",(e)=>{
     $(".updated").css("display","none");
 })
 $("#add-button").on("click",(e)=>{
-    switch (options.getSection()){
-        case "employees":
+    switch (data.getSection()){
+        case "personnel":
             $("#new-employee-required-email").html('');
             $("#new-employee-required-first").html('');
             $("#new-employee-required-last").html('');
@@ -1087,18 +1007,39 @@ $("#add-button").on("click",(e)=>{
             $("#update-employee-required-first").html('');
             $("#update-employee-required-last").html('');
             $("#update-employee-required-dept").html('');
-            createOptions("new-employee-form-dept", data.getDepartments());
-            $("#new-employee-modal").modal('show');
+            $.ajax({
+                url: "libs/php/getAllDepartments.php",
+                type: 'GET',
+                dataType: 'JSON',
+                success: function(result){
+                    createOptions("new-employee-form-dept", result.data);
+                    $("#new-employee-modal").modal('show');
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
             break;
-        case "departments":
+        case "department":
             $("#update-department-required-location").html("");
             $("#update-department-required-name").html("");
             $("#new-department-required-location").html("");
             $("#new-department-required-name").html("");
-            $("#new-department-modal").modal('show');
+            $.ajax({
+                url: "libs/php/getAllLocations.php",
+                type: 'GET',
+                dataType: 'JSON',
+                success: function(result){
+                    createOptions("new-department-form-loc", result.data);
+                    $("#new-department-modal").modal('show');
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+
             break;
-        case "locations":
-            createOptions('new-department-form-loc', data.getLocations());
+        case "location":
             addCheckbox("new-location-form-depts");
             $("#update-location-required-name").html('');
             $("#new-location-required-name").html('');
@@ -1106,40 +1047,120 @@ $("#add-button").on("click",(e)=>{
             break;
     }
 })
+// Search functionality
 
+function search(section) {
+    // Declare variables
+    let tableEl;
+    console.log(section);
+    switch(section){
+        case "personnel":
+            tableEl = "employee-table";
+            break;
+        case "department":
+            tableEl = "department-table";
+            break;
+        case "location":
+            tableEl = "location-table";
+            break;
+    }
+    var input, filter, table, tableRows, td, i, txtValue;
+    input = document.getElementById("search-bar");
+    filter = input.value.toUpperCase();
+    filter = filter.split(" ");
+    filter = filter.join("");
+    table = document.getElementById(tableEl);
+    tableRows = table.getElementsByTagName("tr");
+    for (i = 1 ; i < tableRows.length ; i++){
+        let tableTds = tableRows[i].getElementsByTagName("td");
+        let flag = false;
+        for (let td of tableTds){
+            let txtValue = td.innerText || td.textContent;
+            txtValue = txtValue.toUpperCase();
+            if (txtValue.includes(filter) || filter.includes(txtValue)){
+                flag = true;
+                tableRows[i].style.display = "";
+            }
+        }
+        if (flag == false){
+            tableRows[i].style.display = "none";
+        }
+    }
+}
+
+
+
+// Global data object
+let data = new Data;
 
 $(window).on("load",()=>{
-   
-    getAll(data);
-    getAllDepartments(data);
-    getAllLocations(data);
+    getDepartmentInfo();
+    getLocationInfo();
+    getAll();
+    addCheckbox("options-departments");
+    addLocationsCheckbox("options-locations");
     $(".preloader").fadeOut("slow");
+
 })
-$("#delete-employee").on("click",(e)=>{
-    let employee = data.getCurrentEmployee();
-    if(confirm("Are you sure you want to remove " + employee.getFirst() + " " + employee.getLast() +"?")){
-        let id = employee.getId();
-        deletePersonnelById(id);
-        $("#employee-modal").modal('hide');
+$("#filter-button").on("click",(e)=>{
+    if (data.getSection()=="personnel"){
+        $("#filter-modal").modal("show");
+    } else {
+        $("#filter-departments-modal").modal("show");
     }
+   
+})
+
+
+// DELETE click events
+
+$("#delete-employee").on("click",(e)=>{
+    let id = data.getCurrentPersonnelId();
+    $.ajax({
+        url: "libs/php/getPersonnelById.php",
+        type: 'POST',
+        data: {
+            id: id,
+        },
+        dataType: 'JSON',
+        success: function(result){
+            let personnel = result.data[0];
+            if(confirm("Are you sure you want to remove " + personnel.firstName + " " + personnel.lastName +"?")){
+                deletePersonnelById(id);
+                $("#employee-modal").modal('hide');
+            } 
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
 })
 $("#delete-department").on("click",(e)=>{
-    let department = data.getCurrentDepartment();
-    deleteDepartmentById(department.getId());
+    let id = data.getCurrentDepartmentId();
+    deleteDepartmentById(id);
 })
 $("#delete-location").on("click",(e)=>{
-    let location = data.getCurrentLocation();
-    deleteLocationById(location.getId());
+    let id = data.getCurrentLocationId();
+    deleteLocationById(id);
 })
+$("#options-form").on("change",(e)=>{
+    console.log($("#options-departments").serializeArray());
+    console.log($("#options-locations").serializeArray());
+    getAllFiltered();
+})
+$("#department-options").on("change",(e)=>{
+    getDeptsFiltered();
+})
+// UPDATE click events
+
 $("#submit-employee-update").on("click",(e)=>{
     e.preventDefault();
-    let employee = data.getCurrentEmployee();
+    let id = data.getCurrentPersonnelId();
     let formArray = $("#update-employee").serializeArray();
     let first = formArray[0].value;
     let last = formArray[1].value;
     let dept = formArray[2].value;
     let email = formArray[3].value;
-    let id = employee.getId();
     let ready = true;
     if (first == ''){
         $("#update-employee-required-first").html("Please enter first name.");
@@ -1160,16 +1181,87 @@ $("#submit-employee-update").on("click",(e)=>{
     if (ready){
         first = first.charAt(0).toUpperCase() + first.substr(1).toLowerCase();
         last = last.charAt(0).toUpperCase() + last.substr(1).toLowerCase();
-        updatePersonnelById(employee,first,last,email,dept);
+        updatePersonnelById(id,first,last,email,dept);
         $("#update-employee-required-email").html('');
         $("#update-employee-required-first").html('');
         $("#update-employee-required-last").html('');
         $("#update-employee-required-dept").html('');
     }
 })
+$("#all-locations").on('click',(e)=>{
+    e.preventDefault();
+    let checkboxes = $("#options-locations").find(":checkbox");
+    if (checkboxes.prop("checked")){
+        checkboxes.prop("checked",false).change();
+        $("#all-locations").html("Select all");
+    } else{
+        checkboxes.prop("checked",true).change();
+        $("#all-locations").html("Deselect all");
+    }
+})
+$("#all-departments").on('click',(e)=>{
+    e.preventDefault();
+    let checkboxes = $("#options-departments").find(":checkbox");
+    if (checkboxes.prop("checked")){
+        $("#all-departments").html("Select all");
+        checkboxes.prop("checked",false).change();
+    } else{
+        checkboxes.prop("checked",true).change();
+        $("#all-departments").html("Deselect all");
+    }
+})
+function getAllFiltered(){
+    let deptsArray = $("#options-departments").serializeArray();
+    let sqlQry = 'SELECT p.id, p.lastName, p.firstName, p.email, d.id AS deptId, d.name as department, l.id AS locId, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) WHERE d.name = "fakeDepartmentName"';
+    deptsArray.forEach(dept=>{
+        let string = ' OR d.id = ' + dept.value;
+        sqlQry = sqlQry + string;
+    });
+    sqlQry = sqlQry + ' ORDER BY p.lastName, p.firstName, d.name, l.name'
+    console.log(sqlQry);
+    $.ajax({
+        url: "libs/php/getFilter.php",
+        type: "POST",
+        data: {
+            query: sqlQry,
+        },
+        dataType: 'JSON',
+        success: function(result){
+            renderPersonnel(result.data);
+        },
+        error: function(err){
+            console.log(err);
+        }
+    })
+}
+function getDeptsFiltered(){
+    let locArray = $("#options-locations").serializeArray();
+    let sqlQry = 'SELECT d.id, d.name, COUNT(p.id) AS personnel, l.name AS location FROM department d LEFT JOIN personnel p ON (d.id = p.departmentID) LEFT JOIN location l ON (d.locationID = l.id) WHERE l.id = 999999';
+    locArray.forEach(loc=>{
+        let string = ' OR l.id = ' + loc.value;
+        sqlQry = sqlQry + string;
+    });
+    sqlQry = sqlQry + ' GROUP BY d.id'
+    console.log(sqlQry);
+    $.ajax({
+        url: "libs/php/getFilter.php",
+        type: "POST",
+        data: {
+            query: sqlQry,
+        },
+        dataType: 'JSON',
+        success: function(result){
+            renderDepartments(result.data);
+        },
+        error: function(err){
+            console.log(err);
+        }
+    })
+}
+
 $("#submit-department-update").on("click",(e)=>{
     e.preventDefault();
-    let department = data.getCurrentDepartment();
+    let id = data.getCurrentDepartmentId();
     let formArray = $("#update-department").serializeArray();
     let name = formArray[0].value;
     let location = formArray[1].value;
@@ -1190,48 +1282,66 @@ $("#submit-department-update").on("click",(e)=>{
             newName.push(word);
         })
         name = newName.join(' ');
-        updateDepartmentById(department,name,location);
+        updateDepartmentById(id,name,location);
         $("#update-department-required-location").html("");
         $("#update-department-required-name").html("");
     }
 })
 $("#submit-update-location").on("click",(e)=>{
     e.preventDefault();
-    let location = data.getCurrentLocation();
-    let allDepartments = data. getDepartments();
-    let departments = [];
-    allDepartments.forEach(dept=>{
-        if (dept.getLocationId() == location.getId()){
-            departments.push(dept.getId());
-        }
-    })
+    let id = data.getCurrentLocationId();
     let formArray = $("#update-location").serializeArray();
     let name = formArray[0].value;
+    console.log(formArray);
+    let ready = true;
     let newDepartments = [];
     for(let i=1 ; i< formArray.length ; i++){
         newDepartments.push(Number(formArray[i].value));
     }
-    let ready = true;
-    let count =0;
-    departments.forEach(dept=>{
-        if (!newDepartments.includes(dept)){
-            count ++;
-        }
-    })
     if (name == ''){
         $("#update-location-required-name").html("Please enter location name.");
         ready = false;
     }
-    if (ready){
-        if(count != 0){
-            alert("Departments can only be added not removed. Reassign or delete department to remove from Location");
-            updateFormPlaceholders(location);
-        } else if (confirm("Are you sure you want update the " + location.getName() + " location?")){
-            updateLocationById(location,name,newDepartments);
-            $("#update-location-required-name").html('');
+    console.log(newDepartments);
+    $.ajax({
+        url: "libs/php/getLocationInfoById.php",
+        type: 'POST',
+        data: {
+            id: id,
+        },
+        dataType: 'JSON',
+        success: function(result){
+            console.log(result);
+            if (result.data.length > 0){
+                let departments = [];
+                result.data.forEach(entry=>{
+                    departments.push(Number(entry.deptId));
+                })
+                console.log(departments);
+                let count = 0;
+                departments.forEach(dept=>{
+                    if (!newDepartments.includes(dept)){
+                        count ++;
+                    }
+                })
+                if (count != 0){
+                    ready = false;
+                    alert("Departments can only be assigned, not removed");
+                }
+            }
+            if(ready) {
+                updateLocationById(id,name,newDepartments);
+                $("#update-location-required-name").html('');
+            }
+        },
+        error: function(err) {
+            console.log(err);
         }
-    }  
+    });
 })
+
+// CREATE entry click events
+
 $("#submit-new-employee").on("click",(e)=>{
     e.preventDefault();
     let formArray = $("#new-employee").serializeArray();
@@ -1239,7 +1349,6 @@ $("#submit-new-employee").on("click",(e)=>{
     let last = formArray[1].value;
     let dept = formArray[2].value;
     let email = formArray[3].value;
-    
     let ready = true;
     if (first == ''){
         $("#new-employee-required-first").html("Please enter first name.");
@@ -1316,9 +1425,7 @@ $("#submit-new-location").on("click",(e)=>{
     }
 })
 $("#search-bar").on("keyup",(e)=>{
-    employeeSearch($("#search-bar").val());
-    departmentSearch($("#search-bar").val());
-    locationSearch($("#search-bar").val());
+    search(data.getSection());
 })
 $("#employee-form-dept").on("change",(e)=>{
     let select = e.target;
@@ -1336,10 +1443,17 @@ $("#new-employee-form-dept").on("change",(e)=>{
     let select = e.target;
     let departmentSel = $(select).find(":selected");
     let departmentId = Number(departmentSel[0].attributes[0].value);
-    let department = getDepartmentById(departmentId);
-    let locationId = department.getLocationId();
-    let location = getLocationById(locationId);
-    let locationName = location.getName();
-    $("#new-employee-form-loc").html(locationName);
-})
+    $.ajax({
+        url: "libs/php/getDepartmentInfoById.php",
+        type: "POST",
+        dataType: 'JSON',
+        data: {
+            id: departmentId,
+        },
+        success: (result)=>{
+            let locName = result.data[0].location;
+            $("#new-employee-form-loc").html(locName);
+        }
+    })
+});
 })

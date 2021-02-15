@@ -1,7 +1,8 @@
 <?php
 
-	// remove next two lines for production
-	
+	// example use from browser
+	// http://localhost/companydirectory/libs/php/getAll.php
+
 	$executionStartTime = microtime(true);
 
 	include("config.php");
@@ -24,9 +25,9 @@
 
 		exit;
 
-    }	
-    
-	$query = 'SELECT * FROM personnel WHERE ' . $_POST['attr'] . '="' . $_POST['value'] . '"';
+	}	
+
+	$query = 'SELECT l.id, l.name, COUNT(DISTINCT d.id) AS departments, COUNT(DISTINCT p.id) AS personnel FROM location l LEFT JOIN department d ON (d.locationID = l.id) LEFT JOIN personnel p ON (d.id = p.departmentID) GROUP BY l.id';
 
 	$result = $conn->query($query);
 	

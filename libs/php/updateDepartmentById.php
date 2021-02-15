@@ -29,6 +29,7 @@
 
 	}	
 
+if($_POST['name'] != null){
 	// first query
 
 	$query = 'UPDATE department SET name ="' . $_POST['name'] . '", locationId = "' . $_POST['locationId'] . '" WHERE id =' . $_POST['id'];
@@ -49,6 +50,28 @@
 		exit;
 
 	}
+} else {
+	// first query
+
+	$query = 'UPDATE department SET locationId = "' . $_POST['locationId'] . '" WHERE id =' . $_POST['id'];
+
+	$result = $conn->query($query);
+    
+	if (!$result) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		mysqli_close($conn);
+
+		echo json_encode($output); 
+
+		exit;
+
+	}
+}
 
 	// second query
 

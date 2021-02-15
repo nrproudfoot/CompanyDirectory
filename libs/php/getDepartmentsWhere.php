@@ -26,11 +26,15 @@
 
     }	
     $attr = null;
-    $value = null;
-    if ($_POST['attr'] == "location"){
-        $attr = 'locationId';
-        $value = $_POST['value'];
-    }
+	$value = null;
+	if ($_POST['attr'] == "name"){
+		$attr = "name";
+		$value = '"' . $_POST['value'] . '"';
+	} else {
+		$attr = $_POST['name'];
+		$value = $_POST['value'];
+	}
+    
     
 	$query = 'SELECT id, name, locationID FROM department WHERE ' . $attr . "=" . $value;
 
