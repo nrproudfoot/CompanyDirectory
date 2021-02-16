@@ -1,3 +1,10 @@
+:root{
+    --bright: #66FCF1;
+    --medium: #45A29E;
+    --grey: #C5C6C7;
+    --dark: #1F2833;
+}
+
 html, body{
     height: 100%;
     background-image: url(../images/skyscraper.jpg);
@@ -32,6 +39,11 @@ html, body{
     color: white;
     font-family: 'Big Shoulders Display', cursive;
     cursor:default;
+}
+.edit{
+    position: absolute;
+    right: 1%;
+    top: 1px;
 }
 
 .selector{
@@ -87,6 +99,7 @@ html, body{
     position: absolute;
     top: 1px;
     right: 25px;  
+    color: var(--dark);
 }
 .dropdown-menu{
     width:90%;
@@ -127,6 +140,7 @@ html, body{
     border-top: 2px solid #cccccc;
     border-radius: 10px;
     background-color: #097572;
+    overflow: hidden;
 }
 .main-table tr td{
     cursor: pointer
@@ -155,15 +169,24 @@ html, body{
 .modal{
     z-index: 3001
 }
-
+.modal-body{
+    overflow: auto;
+}
 .modal h4{
     text-align: center;
     margin-left: 25%
 }
 .modal img{
-    width: 25%;
+    width: 40%;
     display: block;
-    margin: 20px auto;
+    margin: 0px auto;
+    margin-bottom: 20px;
+}
+#department-modal img{
+    width: 32%;
+}
+#employee-modal img{
+    width: 25%;
 }
 .modal .updated{
     display: none;

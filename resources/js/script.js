@@ -341,7 +341,6 @@ function addLocation(name,departments){
         dataType: 'JSON',
         success: function(result){
             let ready = true;
-            console.log(result);
             if (result.data.length > 0){
                 $("#new-location-required-name").html("Location name already in use");
                 ready = false;
@@ -355,7 +354,6 @@ function addLocation(name,departments){
                     },
                     dataType: 'JSON',
                     success: function(result){
-                        console.log(result);
                         let id = result.data[0].id;
                         departments.forEach(dept=>{
                             updateDepartmentById(dept,null,id)
@@ -365,13 +363,16 @@ function addLocation(name,departments){
                         getAllFiltered();
                         getLocationInfo();
                         getDeptsFiltered();
-                        $("#new-location-modal").modal('hide');
-                        updateLocationModal(id);
-                        $(".updated").css("display","none");
-                        $(".info").css("display","block");
-                        $(".form").css("display","none");
-                        addCheckbox("options-departments");
-                        addLocationsCheckbox("options-locations");
+                        setTimeout(()=>{
+                            $("#new-location-modal").modal('hide');
+                            updateLocationModal(id);
+                            $(".updated").css("display","none");
+                            $(".info").css("display","block");
+                            $(".form").css("display","none");
+                            addCheckbox("options-departments");
+                            addLocationsCheckbox("options-locations");
+                        },500);
+                        
                         
                        
                     },
@@ -397,7 +398,6 @@ function addDepartment(name,locationId){
         },
         dataType: 'JSON',
         success: function(result){
-            console.log(result);
             let ready = true;
             if (result.data.length > 0){
                 $("#new-department-required-name").html("Department name already in use");
@@ -415,7 +415,7 @@ function addDepartment(name,locationId){
                     success: function(result){
                         let id = result.data[0].id;
                         data.setCurrentDepartmentId(id);
-                        getDepartmentFiltered();
+                        getDeptsFiltered();
                         $("#new-department-modal").modal('hide');
                         updateDepartmentModal(id);
                         updateDepartmentPlaceholders(id);
@@ -451,7 +451,6 @@ function addPersonnel(first,last,email,department){
         },
         dataType: 'JSON',
         success: function(result){
-            console.log("email check",result);
             if (result.data.length > 0){
                 $("#new-employee-required-email").html("Email address already in database");
                 ready = false;
@@ -493,9 +492,7 @@ function addPersonnel(first,last,email,department){
 // UPDATE entries in database
 
 function updateLocationById(id, name, departmentIds){
-    console.log(departmentIds)
     departmentIds.forEach(deptId=>{
-        console.log(deptId);
         updateDepartmentById(deptId,null,id);
     })
     $.ajax({
@@ -534,7 +531,6 @@ function updateDepartmentById(id, name=null, locationId){
         },
         dataType: 'JSON',
         success: function(result){
-            console.log(result);
             if(name){
                 updateDepartmentModal(id);
                 updateAllTables();
@@ -747,46 +743,6 @@ function updateLocationPlaceholders(name,id){
     $("#location-form-name").val(name); 
     addCheckbox("location-form-depts",id)
 }
-    function updateFormPlaceholders(object){
-        if (object instanceof Employee){
-            let employee = object;
-            $("#employee-form-name").val(employee.getFirst());
-            $("#employee-form-surname").val(employee.getLast());
-            $("#employee-form-email").val(employee.getEmail());
-            $("#employee-form-dept").val(employee.getDeptId());
-            $("#employee-form-loc").html(employee.getLocation());
-            $("#new-employee-required-email").html('');
-            $("#new-employee-required-first").html('');
-            $("#new-employee-required-last").html('');
-            $("#new-employee-required-dept").html('');
-            $("#update-employee-required-email").html('');
-            $("#update-employee-required-first").html('');
-            $("#update-employee-required-last").html('');
-            $("#update-employee-required-dept").html('');
-        } else if (object instanceof Department){
-            let department = object;
-            $("#update-department-required-location").html("");
-            $("#update-department-required-name").html("");
-            $("#department-form-name").val(department.getName());
-            $("#department-form-loc").val(department.getLocationId());
-    
-        } else if (object instanceof Location){
-            let location = object;
-            let departments = data.getDepartments();
-            let locDepts = [];
-            departments.forEach(dept => {
-                if (dept.getLocationId() == location.getId()){
-                    locDepts.push(dept);
-                }
-            });
-            $("input:checkbox").prop('checked', false);
-            locDepts.forEach(dept =>{
-                let id = "#" + dept.getId();
-                $(id).prop("checked",true);
-            })
-            $("#location-form-name").val(location.getName());
-        }   
-    }
 function addLocationsCheckbox(targetElement){
     targetElement = document.getElementById(targetElement);
     while(targetElement.hasChildNodes()){
@@ -980,10 +936,9 @@ $(".loc-body").on("click",(e)=>{
     $(".form").css("display","none");  
     let id = e.toElement.parentElement.id;
     id = id.replace("location","");
-    console.log(id);
     data.setCurrentLocationId(id);
     updateLocationModal(id);
-    addCheckbox("location-form-depts",id);
+   
 })
 $(".edit").on("click",(e)=>{
     $(".info").css("display","none");
@@ -1052,7 +1007,6 @@ $("#add-button").on("click",(e)=>{
 function search(section) {
     // Declare variables
     let tableEl;
-    console.log(section);
     switch(section){
         case "personnel":
             tableEl = "employee-table";
@@ -1144,8 +1098,6 @@ $("#delete-location").on("click",(e)=>{
     deleteLocationById(id);
 })
 $("#options-form").on("change",(e)=>{
-    console.log($("#options-departments").serializeArray());
-    console.log($("#options-locations").serializeArray());
     getAllFiltered();
 })
 $("#department-options").on("change",(e)=>{
@@ -1217,8 +1169,7 @@ function getAllFiltered(){
         let string = ' OR d.id = ' + dept.value;
         sqlQry = sqlQry + string;
     });
-    sqlQry = sqlQry + ' ORDER BY p.lastName, p.firstName, d.name, l.name'
-    console.log(sqlQry);
+    sqlQry = sqlQry + ' ORDER BY p.lastName, p.firstName, d.name, l.name';
     $.ajax({
         url: "libs/php/getFilter.php",
         type: "POST",
@@ -1241,8 +1192,7 @@ function getDeptsFiltered(){
         let string = ' OR l.id = ' + loc.value;
         sqlQry = sqlQry + string;
     });
-    sqlQry = sqlQry + ' GROUP BY d.id'
-    console.log(sqlQry);
+    sqlQry = sqlQry + ' GROUP BY d.id';
     $.ajax({
         url: "libs/php/getFilter.php",
         type: "POST",
@@ -1292,7 +1242,6 @@ $("#submit-update-location").on("click",(e)=>{
     let id = data.getCurrentLocationId();
     let formArray = $("#update-location").serializeArray();
     let name = formArray[0].value;
-    console.log(formArray);
     let ready = true;
     let newDepartments = [];
     for(let i=1 ; i< formArray.length ; i++){
@@ -1302,7 +1251,6 @@ $("#submit-update-location").on("click",(e)=>{
         $("#update-location-required-name").html("Please enter location name.");
         ready = false;
     }
-    console.log(newDepartments);
     $.ajax({
         url: "libs/php/getLocationInfoById.php",
         type: 'POST',
@@ -1311,13 +1259,11 @@ $("#submit-update-location").on("click",(e)=>{
         },
         dataType: 'JSON',
         success: function(result){
-            console.log(result);
             if (result.data.length > 0){
                 let departments = [];
                 result.data.forEach(entry=>{
                     departments.push(Number(entry.deptId));
                 })
-                console.log(departments);
                 let count = 0;
                 departments.forEach(dept=>{
                     if (!newDepartments.includes(dept)){
