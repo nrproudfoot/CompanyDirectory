@@ -65,7 +65,7 @@ function updatePersonnelModal(id){
             $("#employee-dept").html(employee.dept);
             $("#employee-loc").html(employee.location);
             $("#employee-email").html(employee.email);
-            $("#employee-modal").modal('show');
+            openModal("employee-modal");
             $.ajax({
                 url: "libs/php/getAllDepartments.php",
                 type: 'GET',
@@ -74,8 +74,6 @@ function updatePersonnelModal(id){
                     let departments = result.data;
                     createOptions("employee-form-dept", departments);
                     updatePersonnelPlaceholders(employee);
-                    $("#employee-modal").modal('show');
-                    $('body').addClass('modal-open');
                 },
                 error: function(err) {
                     console.log(err);
@@ -100,7 +98,7 @@ function updateDepartmentModal(id){
             $("#department-name").html(dept.name);
             $("#department-loc").html(dept.location);
             $("#department-emp").html(dept.personnel);
-            $("#department-modal").modal('show');
+            openModal("department-modal");
            $.ajax({
                 url: "libs/php/getAllLocations.php",
                 type: 'GET',
@@ -109,8 +107,6 @@ function updateDepartmentModal(id){
                     let locations = result.data;
                     createOptions("department-form-loc", locations);
                     updateDepartmentPlaceholders(dept);
-                    $("#department-modal").modal('show');
-                    $('body').addClass('modal-open');
                 },
                 error: function(err) {
                     console.log(err);
@@ -149,8 +145,7 @@ function updateLocationModal(id){
                 table.append('<tr class="table-active"><th>Total</th><td>'
                 + total
                 + '</th></tr>');
-                $("#location-modal").modal('show');
-                $('body').addClass('modal-open');
+                openModal("location-modal");
                 updateLocationPlaceholders(loc[0].name,loc[0].id);
             } else {
                 $.ajax({
@@ -167,8 +162,7 @@ function updateLocationModal(id){
                         table.find("tr").remove();
                         table.append('<tr><td>None</td><td>None</td></tr>');
                         table.append('<tr class="table-active"><th>Total</th><td>0</th></tr>');
-                        $("#location-modal").modal('show');
-                        $('body').addClass('modal-open');
+                        openModal("location-modal");                       
                         updateLocationPlaceholders(loc.name,loc.id);
                     },
                     error: function(err) {
@@ -364,6 +358,8 @@ function addLocation(name,departments){
                         getLocationInfo();
                         getDeptsFiltered();
                         setTimeout(()=>{
+                            $("#new-location")[0].reset();
+                            $("#update-location-required-name").html('');
                             $("#new-location-modal").modal('hide');
                             updateLocationModal(id);
                             $(".updated").css("display","none");
@@ -416,6 +412,9 @@ function addDepartment(name,locationId){
                         let id = result.data[0].id;
                         data.setCurrentDepartmentId(id);
                         getDeptsFiltered();
+                        $("#new-department-required-location").html("");
+                        $("#new-department-required-name").html("");
+                        $("#new-department")[0].reset();
                         $("#new-department-modal").modal('hide');
                         updateDepartmentModal(id);
                         updateDepartmentPlaceholders(id);
@@ -423,10 +422,7 @@ function addDepartment(name,locationId){
                         $(".info").css("display","block");
                         $(".form").css("display","none");
                         addCheckbox("options-departments");
-                        addLocationsCheckbox("options-locations");
-                       
-                       
-                        
+                        addLocationsCheckbox("options-locations"); 
                     },
                     error: function(err) {
                         console.log(err);
@@ -468,6 +464,11 @@ function addPersonnel(first,last,email,department){
                     dataType: 'JSON',
                     success: function(result){
                         getAllFiltered();
+                        $("#new-employee")[0].reset();
+                        $("#new-employee-required-email").html('');
+                        $("#new-employee-required-first").html('');
+                        $("#new-employee-required-last").html('');
+                        $("#new-employee-required-dept").html('');
                         let id = Number(result.data[0].id);
                         $("#new-employee-modal").modal('hide');
                         updatePersonnelModal(id);
@@ -551,30 +552,51 @@ function updateDepartmentById(id, name=null, locationId){
 
 }
 function updatePersonnelById(id,first,last,email,department){
+    let ready = true;
     $.ajax({
-        url: "libs/php/updatePersonnelById.php",
+        url: "libs/php/getPersonnelWhere.php",
         type: 'POST',
         data: {
-            firstName: first,
-            lastName: last,
-            email: email,
-            id: id,
-            departmentId: department,
+            attr: "email",
+            value: email,
         },
         dataType: 'JSON',
         success: function(result){
-            getAllFiltered();
-            updatePersonnelModal(id);
-            setTimeout(()=>{
-                $('.form').css("display","none");
-                $(".updated").css("display","block");
-                $(".info").css("display","block");
-            }, 500)
+
+            if (result.data.length > 0 && result.data[0].id != id){
+                $("#update-employee-required-email").html("Email address already in database");
+                ready = false;
+            } else {
+                $.ajax({
+                    url: "libs/php/updatePersonnelById.php",
+                    type: 'POST',
+                    data: {
+                        firstName: first,
+                        lastName: last,
+                        email: email,
+                        id: id,
+                        departmentId: department,
+                    },
+                    dataType: 'JSON',
+                    success: function(result){
+                        getAllFiltered();
+                        updatePersonnelModal(id);
+                        setTimeout(()=>{
+                            $('.form').css("display","none");
+                            $(".updated").css("display","block");
+                            $(".info").css("display","block");
+                        }, 500)
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
+            }
         },
-        error: function(err) {
+        error: function(err){
             console.log(err);
         }
-    });
+})
 }
 
 
@@ -754,17 +776,19 @@ function addLocationsCheckbox(targetElement){
         dataType: 'JSON',
         success: function(result){
             let locArray = result.data;
+            locArray = locArray.sort(function(a,b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);} );
             locArray.forEach(loc=>{
                 let label = document.createElement("label");
                 let opt = loc.name;
-                label.setAttribute("for", opt);
+                let id = "location-option-" + loc.id;
+                label.setAttribute("for", id);
                 label.innerHTML = opt;
                 targetElement.append(label);
                 let el = document.createElement("input");
                 el.type = "checkbox";
                 el.name = opt;
                 el.value = loc.id;
-                el.id = loc.id;
+                el.id = id;
                 targetElement.append(el);
                 let br = document.createElement('br');
                 targetElement.append(br);
@@ -790,6 +814,7 @@ function addCheckbox(targetElement,locationId=null) {
         dataType: 'JSON',
         success: function(result){
             let departments = result.data;
+            departments = departments.sort(function(a,b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);} );
             if(locationId){
                 $.ajax({
                     url: "libs/php/getLocationInfoById.php",
@@ -807,8 +832,9 @@ function addCheckbox(targetElement,locationId=null) {
                         })
                         departments.forEach(dept=>{ 
                             let label = document.createElement("label");
+                            let id = "department-option-" + dept.id;
                             let opt = dept.name;
-                            label.setAttribute("for", opt);
+                            label.setAttribute("for", id);
                             label.innerHTML = opt;
                             targetElement.append(label);
                             let el = document.createElement("input");
@@ -818,7 +844,7 @@ function addCheckbox(targetElement,locationId=null) {
                             }
                             el.name = opt;
                             el.value = dept.id;
-                            el.id = dept.id;
+                            el.id = id;
                             targetElement.append(el);
                             let br = document.createElement('br');
                             targetElement.append(br);
@@ -835,14 +861,15 @@ function addCheckbox(targetElement,locationId=null) {
                 departments.forEach(dept=>{ 
                     let label = document.createElement("label");
                     let opt = dept.name;
-                    label.setAttribute("for", opt);
+                    let id = "department-option-" + dept.id;
+                    label.setAttribute("for", id);
                     label.innerHTML = opt;
                     targetElement.append(label);
                     let el = document.createElement("input");
                     el.type = "checkbox";
                     el.name = opt;
                     el.value = dept.id;
-                    el.id = dept.id;
+                    el.id = id;
                     targetElement.append(el);
                     let br = document.createElement('br');
                     targetElement.append(br);
@@ -856,17 +883,30 @@ function addCheckbox(targetElement,locationId=null) {
         }
     });
 };
+function openModal(modalid) {
+    //Looks for current modal open
+    if ($('.modal.fade.show').length > 0) { 
 
-//Watch for closing modals
-$('.modal').on('hidden.bs.modal', function () {
-    //If there are any visible
-    if($(".modal:visible").length > 0) {
-        //Slap the class on it (wait a moment for things to settle)
-        setTimeout(function() {
-            $('body').addClass('modal-open');
-        },200)
+        //Gets the id of the current opened modal
+        var currentOpenModalId = $('.modal.fade.show').attr('id');
+
+        //Attaches a function to the closing event
+        $('#' + currentOpenModalId).on('hidden.bs.modal', function () {
+
+            //Opens the new model when the closing completes
+            $('#' + modalid).modal('show');
+
+            //Unbinds the callback
+            $('#' + currentOpenModalId).off('hidden.bs.modal');
+        });
+
+        //Hides the current modal
+        $('#' + currentOpenModalId).modal('hide');
+    } else {
+        //If is not an opened modal, the new modal is opened directly
+        $('#' + modalid).modal('show');
     }
-});
+}
 
 /* Tab animations */
 $(".employees").on("click",(e)=>{
@@ -944,6 +984,7 @@ $(".edit").on("click",(e)=>{
     $(".info").css("display","none");
     $(".form").css("display","block");
     $(".updated").css("display","none");
+    $('body').addClass('modal-open');
 })
 $(".back").on("click",(e)=>{
     e.preventDefault();
@@ -968,7 +1009,7 @@ $("#add-button").on("click",(e)=>{
                 dataType: 'JSON',
                 success: function(result){
                     createOptions("new-employee-form-dept", result.data);
-                    $("#new-employee-modal").modal('show');
+                    openModal("new-employee-modal");
                 },
                 error: function(err) {
                     console.log(err);
@@ -986,7 +1027,7 @@ $("#add-button").on("click",(e)=>{
                 dataType: 'JSON',
                 success: function(result){
                     createOptions("new-department-form-loc", result.data);
-                    $("#new-department-modal").modal('show');
+                    openModal("new-department-modal");
                 },
                 error: function(err) {
                     console.log(err);
@@ -998,7 +1039,7 @@ $("#add-button").on("click",(e)=>{
             addCheckbox("new-location-form-depts");
             $("#update-location-required-name").html('');
             $("#new-location-required-name").html('');
-            $("#new-location-modal").modal('show');
+            openModal("new-location-modal");
             break;
     }
 })
@@ -1058,9 +1099,9 @@ $(window).on("load",()=>{
 })
 $("#filter-button").on("click",(e)=>{
     if (data.getSection()=="personnel"){
-        $("#filter-modal").modal("show");
+        openModal("filter-modal");
     } else {
-        $("#filter-departments-modal").modal("show");
+        openModal("filter-departments-modal");
     }
    
 })
@@ -1316,11 +1357,6 @@ $("#submit-new-employee").on("click",(e)=>{
         first = first.charAt(0).toUpperCase() + first.substr(1).toLowerCase();
         last = last.charAt(0).toUpperCase() + last.substr(1).toLowerCase();
         addPersonnel(first,last,email,dept);
-        $("#new-employee")[0].reset();
-        $("#new-employee-required-email").html('');
-        $("#new-employee-required-first").html('');
-        $("#new-employee-required-last").html('');
-        $("#new-employee-required-dept").html('');
     }
 })
 $("#submit-new-department").on("click",(e)=>{
@@ -1346,9 +1382,6 @@ $("#submit-new-department").on("click",(e)=>{
         })
         name = newName.join(' ');
         addDepartment(name,locationId);
-        $("#new-department-required-location").html("");
-        $("#new-department-required-name").html("");
-        $("#new-department")[0].reset();
     }
 })
 $("#submit-new-location").on("click",(e)=>{
@@ -1366,8 +1399,7 @@ $("#submit-new-location").on("click",(e)=>{
     }
     if (ready){
             addLocation(name,newDepartments);
-            $("#new-location")[0].reset();
-            $("#update-location-required-name").html('');
+           
     }
 })
 $("#search-bar").on("keyup",(e)=>{
